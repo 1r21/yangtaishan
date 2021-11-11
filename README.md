@@ -1,0 +1,1 @@
+# Another implement for taishan (go)
