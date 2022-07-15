@@ -27,7 +27,21 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, *core.Api)) http.Ha
 }
 
 func getArticles(w http.ResponseWriter, r *http.Request, api *core.Api) {
-	articles, _ := GetArticles(db)
+	params := r.URL.Query()
+	page := params.Get("page")
+	pageSize := params.Get("pageSize")
+
+	if page == "" {
+		page = "1"
+	}
+
+	if pageSize == "" {
+		pageSize = "10"
+	}
+
+	Fpage, _ := strconv.Atoi(page)
+	FpageSize, _ := strconv.Atoi(pageSize)
+	articles, _ := GetArticles(db, FpageSize, (Fpage-1)*FpageSize)
 
 	api.Code = 0
 	api.Message = "success"

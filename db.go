@@ -36,9 +36,9 @@ func InitDB() (*sql.DB, error) {
 	return db, nil
 }
 
-func GetArticles(db *sql.DB) ([]core.BaseArticle, error) {
+func GetArticles(db *sql.DB, limit int, offset int) ([]core.BaseArticle, error) {
 	var articles []core.BaseArticle
-	rows, err := db.Query("SELECT id,title,date,image_url FROM news")
+	rows, err := db.Query("SELECT id,title,date,image_url FROM news ORDER BY id DESC LIMIT ? OFFSET ?", limit, offset)
 
 	if err != nil {
 		return nil, fmt.Errorf("error %v", err)
