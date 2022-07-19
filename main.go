@@ -17,9 +17,15 @@ var logger, _ = zap.NewProduction(zap.Fields(zap.String("type", "main")))
 var db *sql.DB
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, *core.Api)) http.HandlerFunc {
+
 	return func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Set("Content-Type", "application/json; charset=utf-8")
+		rw.Header().Set("Access-Control-Allow-Headers", "*")
+		rw.Header().Set("Access-Control-Allow-Origin", "*")
+		rw.Header().Set("Access-Control-Max-Age", "600")
+
 		api := &core.Api{}
+		logger.Info(r.Method + r.URL.Path)
 		fn(rw, r, api)
 		result, _ := json.Marshal(api)
 		rw.Write(result)
@@ -79,11 +85,10 @@ func main() {
 	http.HandleFunc("/api/news", makeHandler(getArticles))
 	http.HandleFunc("/api/news/detail", makeHandler(getArticle))
 
-	logger.Info("server starting: http://localhost:8091")
+	logger.Info("server starting: http://localhost:8085")
 
-	err = http.ListenAndServe(":8091", nil)
+	err = http.ListenAndServe(":8085", nil)
 	if err != nil {
 		logger.Fatal("server error", zap.Error(err))
 	}
-
 }
